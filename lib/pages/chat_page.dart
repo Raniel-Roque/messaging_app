@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:messaging_app/components/chat_bubble.dart';
 import 'package:messaging_app/components/my_text_field.dart';
 
 import '../services/auth/auth_service.dart';
@@ -35,6 +36,9 @@ class ChatPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(receiverEmail),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.grey,
+        elevation: 0,
       ),
       body: Column(
         children: [
@@ -77,26 +81,62 @@ class ChatPage extends StatelessWidget {
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Text(data["message"]);
+    //Is current user
+    bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
+
+    //Align message to right = current. left = receiver
+    var alignment =
+        isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
+
+    return Container(
+      alignment: alignment,
+      child: Column(
+        children: [
+          ChatBubble(
+            message: data["message"],
+            isCurrentUser: isCurrentUser,
+          ),
+        ],
+      ),
+    );
   }
 
   //Build message input
   Widget _buildUserInput() {
-    return Row(
-      children: [
-        Expanded(
-          child: MyTextField(
-              controller: _messageController,
-              hintText: "Type a message",
-              obscureText: false),
-        ),
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10.0),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 15,
+          ),
+          Expanded(
+            child: MyTextField(
+                controller: _messageController,
+                hintText: "Type a message",
+                obscureText: false),
+          ),
 
-        //Send Button
-        IconButton(
-          onPressed: sendMessage,
-          icon: Icon(Icons.arrow_upward),
-        ),
-      ],
+          SizedBox(
+            width: 10,
+          ),
+          //Send Button
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
+            margin: EdgeInsets.only(right: 10),
+            child: IconButton(
+              onPressed: sendMessage,
+              icon: Icon(
+                Icons.arrow_upward,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

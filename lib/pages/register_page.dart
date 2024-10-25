@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../components/my_button.dart';
 import '../components/my_text_field.dart';
-import '../services/auth_service.dart';
+import '../services/auth/auth_service.dart';
 
 class RegisterPage extends StatelessWidget {
-  void Function()? onTap;
+  final void Function()? onTap;
   RegisterPage({super.key, required this.onTap});
 
   //Text Controllers
@@ -16,13 +16,13 @@ class RegisterPage extends StatelessWidget {
   //Sign Up user
   void signUp(BuildContext context) {
     //Auth Service
-    final _auth = AuthService();
+    final auth = AuthService();
 
     //Password match = Create User
     if (_passwordController.text == _confirmPasswordController.text) {
       //Try Sign Up
       try {
-        _auth.signUpWithEmailPassword(
+        auth.signUpWithEmailPassword(
             _emailController.text, _passwordController.text);
       }
 

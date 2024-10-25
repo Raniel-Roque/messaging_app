@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../pages/settings_page.dart';
-import '../services/auth_service.dart';
+import '../services/auth/auth_service.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
 
   void logout() {
     //Get Auth Service
-    final _auth = AuthService();
-    _auth.signOut();
+    final auth = AuthService();
+    auth.signOut();
   }
 
   @override

@@ -104,7 +104,7 @@ class ChatPage extends StatelessWidget {
   //Build message input
   Widget _buildUserInput() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 10.0),
+      padding: EdgeInsets.only(top: 5.0, bottom: 10.0),
       child: Row(
         children: [
           SizedBox(
@@ -120,13 +120,14 @@ class ChatPage extends StatelessWidget {
           SizedBox(
             width: 10,
           ),
+
           //Send Button
           Container(
             decoration: BoxDecoration(
               color: Colors.green,
               shape: BoxShape.circle,
             ),
-            margin: EdgeInsets.only(right: 10),
+            margin: EdgeInsets.only(right: 20),
             child: IconButton(
               onPressed: sendMessage,
               icon: Icon(

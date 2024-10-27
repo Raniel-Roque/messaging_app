@@ -95,6 +95,8 @@ class ChatPage extends StatelessWidget {
           ChatBubble(
             message: data["message"],
             isCurrentUser: isCurrentUser,
+            messageID: doc.id,
+            userID: data["senderID"],
           ),
         ],
       ),

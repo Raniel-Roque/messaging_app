@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:messaging_app/firebase_options.dart';
 import 'package:messaging_app/services/auth/auth_gate.dart';
-import 'package:messaging_app/themes/dark_mode.dart';
 import 'package:messaging_app/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -24,10 +23,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: AuthGate(),
-      theme: darkMode, //REMOVE LATER
-      //theme: Provider.of<ThemeProvider>(context).themeData
-    );
+        debugShowCheckedModeBanner: false,
+        home: AuthGate(),
+        //theme: darkMode, //REMOVE LATER
+        theme: Provider.of<ThemeProvider>(context).themeData);
   }
 }

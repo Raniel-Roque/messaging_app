@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
   //Build a list of users except for the current logged in user
   Widget _buildUserList() {
     return StreamBuilder(
-      stream: _chatService.getUsersStream(),
+      stream: _chatService.getUsersStreamExcludingBlocked(),
       builder: (context, snapshot) {
         //Error
         if (snapshot.hasError) {

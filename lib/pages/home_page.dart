@@ -80,12 +80,20 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.grey,
+        backgroundColor: Colors.grey,
         elevation: 0,
       ),
       drawer: MyDrawer(),
-      body: _buildUserList(),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: _buildUserList(),
+          ),
+        ],
+      ),
     );
   }
 

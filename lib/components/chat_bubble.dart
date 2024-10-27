@@ -25,7 +25,7 @@ class ChatBubble extends StatelessWidget {
               //Report Message Button
               ListTile(
                 leading: const Icon(Icons.flag),
-                title: const Text('Report'),
+                title: const Text('Report Message'),
                 onTap: () {
                   Navigator.pop(context);
                   _reportMessage(context, messageID, userID);
@@ -73,7 +73,12 @@ class ChatBubble extends StatelessWidget {
                 ),
               );
             },
-            child: Text("Report"),
+            child: Text(
+              "Report",
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
           ),
         ],
       ),
@@ -98,6 +103,8 @@ class ChatBubble extends StatelessWidget {
           TextButton(
             onPressed: () {
               ChatService().blockUser(userID);
+              //Dismiss Dialog => Dismiss Chat => Home Page
+              Navigator.pop(context);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -105,7 +112,12 @@ class ChatBubble extends StatelessWidget {
                 ),
               );
             },
-            child: Text("Block"),
+            child: Text(
+              "Block",
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
           ),
         ],
       ),

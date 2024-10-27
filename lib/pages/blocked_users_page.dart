@@ -25,7 +25,7 @@ class BlockedUsersPage extends StatelessWidget {
             child: Text("Cancel"),
           ),
 
-          //Report Button (Confirm)
+          //Unblock Button (Confirm)
           TextButton(
             onPressed: () {
               ChatService().unblockUser(userID);

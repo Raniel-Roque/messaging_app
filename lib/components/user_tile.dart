@@ -3,13 +3,21 @@ import 'package:flutter/material.dart';
 class UserTile extends StatelessWidget {
   final String text;
   final void Function()? onTap;
+  final void Function()? onLongPress;
 
-  const UserTile({super.key, required this.text, required this.onTap});
+  const UserTile({
+    super.key,
+    required this.text,
+    required this.onTap,
+    required this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.secondary,
@@ -19,12 +27,8 @@ class UserTile extends StatelessWidget {
         padding: EdgeInsets.all(20),
         child: Row(
           children: [
-            //Icon
             Icon(Icons.person),
-
             const SizedBox(width: 20),
-
-            //Username
             Text(text),
           ],
         ),

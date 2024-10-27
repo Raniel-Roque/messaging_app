@@ -13,6 +13,68 @@ class HomePage extends StatelessWidget {
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
+  //Show options
+  void _showOptions(BuildContext context, String userID) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              //Block User
+              ListTile(
+                leading: const Icon(Icons.block),
+                title: const Text('Block User'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _blockUser(context, userID);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  //Block User
+  void _blockUser(BuildContext context, String userID) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Block User"),
+        content: Text("Are you sure you want to block this user?"),
+        actions: [
+          //Cancel button
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"),
+          ),
+
+          //Block Button (Confirm)
+          TextButton(
+            onPressed: () {
+              ChatService().blockUser(userID);
+              //Dismiss Dialog => Home Page
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("User has been blocked"),
+                ),
+              );
+            },
+            child: Text(
+              "Block",
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,15 +114,12 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  //Build individual list title for user
   Widget _buildUserListItem(
       Map<String, dynamic> userData, BuildContext context) {
-    //Display all user except current user
     if (userData["email"] != _authService.getCurrentUser()!.email) {
       return UserTile(
         text: userData["email"],
         onTap: () {
-          //Tapped on a user -> go to chat page
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -70,6 +129,9 @@ class HomePage extends StatelessWidget {
               ),
             ),
           );
+        },
+        onLongPress: () {
+          _showOptions(context, userData["uid"]);
         },
       );
     } else {

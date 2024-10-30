@@ -36,9 +36,8 @@ class ChatPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(receiverEmail),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.grey,
-        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        elevation: 10,
       ),
       body: Column(
         children: [
@@ -114,9 +113,10 @@ class ChatPage extends StatelessWidget {
           ),
           Expanded(
             child: MyTextField(
-                controller: _messageController,
-                hintText: "Type a message",
-                obscureText: false),
+              controller: _messageController,
+              hintText: "Type a message",
+              obscureText: false,
+            ),
           ),
 
           SizedBox(

@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:messaging_app/components/my_drawer.dart';
-
 import '../components/user_tile.dart';
 import '../services/auth/auth_service.dart';
 import '../services/chat/chat_service.dart';
 import 'chat_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key});
 
-  //chat and auth service
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
-  //Show options
+  Future<void> _handleRefresh() async {
+    // This will force the stream to re-fetch data.
+    setState(() {}); // Refreshes the UI to rebuild the user list.
+    return await Future.delayed(
+        Duration(seconds: 2)); // Simulate a delay for refresh.
+  }
+
   void _showOptions(BuildContext context, String userID) {
     showModalBottomSheet(
       context: context,
@@ -21,7 +31,6 @@ class HomePage extends StatelessWidget {
         return SafeArea(
           child: Wrap(
             children: [
-              //Block User
               ListTile(
                 leading: const Icon(Icons.block),
                 title: const Text('Block User'),
@@ -37,7 +46,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  //Block User
   void _blockUser(BuildContext context, String userID) {
     showDialog(
       context: context,
@@ -45,17 +53,13 @@ class HomePage extends StatelessWidget {
         title: Text("Block User"),
         content: Text("Are you sure you want to block this user?"),
         actions: [
-          //Cancel button
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text("Cancel"),
           ),
-
-          //Block Button (Confirm)
           TextButton(
             onPressed: () {
-              ChatService().blockUser(userID);
-              //Dismiss Dialog => Home Page
+              _chatService.blockUser(userID);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -80,43 +84,35 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
-        backgroundColor: Colors.grey,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         elevation: 0,
       ),
       drawer: MyDrawer(),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: _buildUserList(),
-          ),
-        ],
-      ),
+      body: _buildUserList(),
     );
   }
 
-  //Build a list of users except for the current logged in user
   Widget _buildUserList() {
     return StreamBuilder(
       stream: _chatService.getUsersStreamExcludingBlocked(),
       builder: (context, snapshot) {
-        //Error
         if (snapshot.hasError) {
           return const Text("Error");
         }
 
-        //Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Text("Loading..");
         }
 
-        //Return List View
-        return ListView(
-          children: snapshot.data!
-              .map<Widget>((userData) => _buildUserListItem(userData, context))
-              .toList(),
+        return LiquidPullToRefresh(
+          onRefresh: _handleRefresh,
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          child: ListView(
+            children: snapshot.data!
+                .map<Widget>(
+                    (userData) => _buildUserListItem(userData, context))
+                .toList(),
+          ),
         );
       },
     );

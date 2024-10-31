@@ -17,6 +17,17 @@ class RegisterPage extends StatelessWidget {
   void signUp(BuildContext context) async {
     final auth = AuthService();
 
+    // Helper function to show error dialogs
+    void showErrorDialog(String title, String content) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: Text(content),
+        ),
+      );
+    }
+
     // Trim whitespace from email and password fields
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
@@ -24,25 +35,18 @@ class RegisterPage extends StatelessWidget {
 
     // Check if any of the fields are empty
     if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("All fields are required."),
-          content:
-              Text("Please enter your email, password, and confirm password."),
-        ),
+      showErrorDialog(
+        "All fields are required.",
+        "Please enter your email, password, and confirm password.",
       );
       return;
     }
 
     // Check if the email format is valid
     if (!EmailValidator.validate(email)) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Invalid email format!"),
-          content: Text("Please enter a valid email."),
-        ),
+      showErrorDialog(
+        "Invalid email format!",
+        "Please enter a valid email.",
       );
       return;
     }
@@ -52,25 +56,18 @@ class RegisterPage extends StatelessWidget {
         r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#\$%\^&\*\(\)\-_+=\{\}\[\]\|\\:;"<>,\./\?]).{8,}$');
 
     if (!passwordPattern.hasMatch(password)) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Weak Password"),
-          content: Text(
-              "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character."),
-        ),
+      showErrorDialog(
+        "Weak Password",
+        "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.",
       );
       return;
     }
 
     // Check if passwords match
     if (password != confirmPassword) {
-      // Show password mismatch dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Passwords don't match!"),
-        ),
+      showErrorDialog(
+        "Passwords don't match!",
+        "Please ensure both passwords are the same.",
       );
       return;
     }
@@ -78,24 +75,23 @@ class RegisterPage extends StatelessWidget {
     try {
       // Attempt sign-up
       await auth.signUpWithEmailPassword(email, password);
-      // Additional logic if needed on successful sign-up, like navigation
-    } catch (error) {
-      if (error.toString().contains('email-already-in-use')) {
-        // Show error dialog
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('This email is already in use.'),
-            content: Text("Please enter a valid email."),
-          ),
+    } catch (e) {
+      print('Error ${e}');
+      //Error Handling (Email is in use & Invalid Email Format (2nd one due to issue with .com))
+      if (e.toString().contains('email-already-in-use')) {
+        showErrorDialog(
+          'This email is already in use.',
+          "Please enter a valid email.",
+        );
+      } else if (e.toString().contains('invalid-email')) {
+        showErrorDialog(
+          'Invalid Email',
+          "Please enter a valid email.",
         );
       } else {
-        // Show error dialog
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('An unknown error occurred.'),
-          ),
+        showErrorDialog(
+          'Unknown error occurred.',
+          "Please try again later.",
         );
       }
     }

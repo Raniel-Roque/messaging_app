@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/components/my_button.dart';
 import 'package:messaging_app/components/my_text_field.dart';
@@ -11,29 +12,66 @@ class LoginPage extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  //Sign In user
   void signIn(BuildContext context) async {
-    //Auth Service
+    // Auth Service
     final authService = AuthService();
 
-    //Try Login
-    try {
-      await authService.signInWithEmailPassword(
-        _emailController.text,
-        _passwordController.text,
-      );
-    }
-
-    //Catch
-    catch (e) {
+    // Helper function to show error dialogs
+    void showErrorDialog(String title, String content) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(
-            e.toString(),
-          ),
+          title: Text(title),
+          content: Text(content),
         ),
       );
+    }
+
+    // Get trimmed input values
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    // Check if any of the fields are empty
+    if (email.isEmpty || password.isEmpty) {
+      showErrorDialog(
+        'Required Fields',
+        'Please enter your email and password.',
+      );
+      return;
+    }
+
+    // Check if the email format is valid
+    if (!EmailValidator.validate(email)) {
+      showErrorDialog(
+        'Invalid Email',
+        'Please enter a valid email address.',
+      );
+      return;
+    }
+
+    try {
+      // Attempt sign-in with trimmed email and password
+      await authService.signInWithEmailPassword(email, password);
+    } catch (e) {
+      // Check the error message string for specific cases (User not Found & Invalid Credentials)
+      if (e.toString().contains('user-not-found')) {
+        showErrorDialog(
+          'User Not Found',
+          'No account found for this email. Please check the email or register for a new account.',
+        );
+      } else if (e.toString().contains('wrong-password') ||
+          e.toString().contains('invalid-credential') ||
+          e.toString().contains('invalid-email')) {
+        showErrorDialog(
+          'Incorrect Email or Password',
+          'The email or password you entered is incorrect. Please try again.',
+        );
+      } else {
+        showErrorDialog(
+          'Sign In Error',
+          'An unknown error occurred. Please try again later.',
+        );
+      }
     }
   }
 
@@ -67,7 +105,7 @@ class LoginPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                //Email Textfield
+                //Email TextField
                 MyTextField(
                     controller: _emailController,
                     hintText: 'Email',
@@ -75,7 +113,7 @@ class LoginPage extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                //Password Textfield
+                //Password TextField
                 MyTextField(
                     controller: _passwordController,
                     hintText: 'Password',

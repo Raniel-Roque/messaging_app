@@ -4,12 +4,14 @@ class MyTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscureText;
+  final bool isMultiLine; // New parameter to indicate multi-line support
 
   const MyTextField({
     super.key,
     required this.controller,
     required this.hintText,
     required this.obscureText,
+    this.isMultiLine = false,
   });
 
   @override
@@ -17,6 +19,13 @@ class MyTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
+      maxLines: isMultiLine ? null : 1, // Allow multi-line if specified
+      keyboardType: isMultiLine
+          ? TextInputType.multiline
+          : TextInputType.text, // Set keyboard type
+      textInputAction: isMultiLine
+          ? TextInputAction.newline
+          : TextInputAction.done, // Set action
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
           borderSide:

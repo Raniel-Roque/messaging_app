@@ -76,7 +76,6 @@ class RegisterPage extends StatelessWidget {
       // Attempt sign-up
       await auth.signUpWithEmailPassword(email, password);
     } catch (e) {
-      print('Error ${e}');
       //Error Handling (Email is in use & Invalid Email Format (2nd one due to issue with .com))
       if (e.toString().contains('email-already-in-use')) {
         showErrorDialog(

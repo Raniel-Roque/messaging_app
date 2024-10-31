@@ -6,28 +6,40 @@ import 'package:messaging_app/components/my_text_field.dart';
 import '../services/auth/auth_service.dart';
 import '../services/chat/chat_service.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   final String receiverEmail;
   final String receiverID;
 
-  ChatPage({super.key, required this.receiverEmail, required this.receiverID});
+  const ChatPage(
+      {super.key, required this.receiverEmail, required this.receiverID});
 
-  //Text controller
+  @override
+  _ChatPageState createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  // Text controller
   final TextEditingController _messageController = TextEditingController();
 
-  //Chat and auth service
+  // Scroll Controller
+  final _scrollController = ScrollController();
+
+  // Chat and auth service
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
-  //Send Message
+  // Send Message
   void sendMessage() async {
-    //Send if only there is an input
+    // Send if only there is an input
     if (_messageController.text.isNotEmpty) {
-      //send message
-      await _chatService.sendMessage(receiverID, _messageController.text);
+      // Send message
+      await _chatService.sendMessage(
+          widget.receiverID, _messageController.text);
 
-      //Clear text
+      // Clear text
       _messageController.clear();
+      // Scroll down after sending a message
+      scrollDown(); // Scroll down after sending the message
     }
   }
 
@@ -35,40 +47,50 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(receiverEmail),
+        title: Text(widget.receiverEmail),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         elevation: 10,
       ),
       body: Column(
         children: [
-          //Display all message
+          // Display all messages
           Expanded(child: _buildMessageList()),
 
-          //Display user input
+          // Display user input
           _buildUserInput(),
         ],
       ),
     );
   }
 
-  //Build Message List
+  // Build Message List
   Widget _buildMessageList() {
     String senderID = _authService.getCurrentUser()!.uid;
     return StreamBuilder(
-      stream: _chatService.getMessages(receiverID, senderID),
+      stream: _chatService.getMessages(widget.receiverID, senderID),
       builder: (context, snapshot) {
-        //Errors
+        // Errors
         if (snapshot.hasError) {
           return const Text("Error");
         }
 
-        //Loading
+        // Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Text("Loading...");
         }
 
-        //Return list view
+        // Check if we have data and call scrollDown
+        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) {
+              scrollDown(); // Call scrollDown after the messages are rendered
+            },
+          );
+        }
+
+        // Return list view
         return ListView(
+          controller: _scrollController,
           children:
               snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
         );
@@ -76,14 +98,14 @@ class ChatPage extends StatelessWidget {
     );
   }
 
-  //Build Message
+  // Build Message
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    //Is current user
+    // Is current user
     bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
 
-    //Align message to right = current. left = receiver
+    // Align message to right = current. left = receiver
     var alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
 
@@ -102,7 +124,7 @@ class ChatPage extends StatelessWidget {
     );
   }
 
-  //Build message input
+  // Build message input
   Widget _buildUserInput() {
     return Padding(
       padding: EdgeInsets.only(top: 5.0, bottom: 10.0),
@@ -116,6 +138,7 @@ class ChatPage extends StatelessWidget {
               controller: _messageController,
               hintText: "Type a message",
               obscureText: false,
+              isMultiLine: true,
             ),
           ),
 
@@ -123,7 +146,7 @@ class ChatPage extends StatelessWidget {
             width: 10,
           ),
 
-          //Send Button
+          // Send Button
           Container(
             decoration: BoxDecoration(
               color: Colors.green,
@@ -131,7 +154,9 @@ class ChatPage extends StatelessWidget {
             ),
             margin: EdgeInsets.only(right: 20),
             child: IconButton(
-              onPressed: sendMessage,
+              onPressed: () {
+                sendMessage();
+              },
               icon: Icon(
                 Icons.arrow_upward,
                 color: Colors.white,
@@ -141,5 +166,24 @@ class ChatPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  //Method to scroll to bottom.
+  void scrollDown() {
+    // Check if the scroll controller has any position
+    if (_scrollController.hasClients) {
+      // Use a delay to ensure that the ListView has been built completely
+      Future.delayed(
+        Duration(milliseconds: 100),
+        () {
+          // Jump to the bottom
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeIn,
+          );
+        },
+      );
+    }
   }
 }

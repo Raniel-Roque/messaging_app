@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../components/my_button.dart';
 import '../components/my_text_field.dart';
 import '../services/auth/auth_service.dart';
+import 'package:email_validator/email_validator.dart';
 
 class RegisterPage extends StatelessWidget {
   final void Function()? onTap;
@@ -13,41 +14,90 @@ class RegisterPage extends StatelessWidget {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  //Sign Up user
-  void signUp(BuildContext context) {
-    //Auth Service
+  void signUp(BuildContext context) async {
     final auth = AuthService();
 
-    //Password match = Create User
-    if (_passwordController.text == _confirmPasswordController.text) {
-      //Try Sign Up
-      try {
-        auth.signUpWithEmailPassword(
-            _emailController.text, _passwordController.text);
-      }
+    // Trim whitespace from email and password fields
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
 
-      //Catch
-      catch (e) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(
-              e.toString(),
-            ),
-          ),
-        );
-      }
-    }
-    //Password dont match
-    else {
+    // Check if any of the fields are empty
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(
-            "Passwords dont match!",
-          ),
+          title: Text("All fields are required."),
+          content:
+              Text("Please enter your email, password, and confirm password."),
         ),
       );
+      return;
+    }
+
+    // Check if the email format is valid
+    if (!EmailValidator.validate(email)) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Invalid email format!"),
+          content: Text("Please enter a valid email."),
+        ),
+      );
+      return;
+    }
+
+    // Password strength validation
+    final passwordPattern = RegExp(
+        r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#\$%\^&\*\(\)\-_+=\{\}\[\]\|\\:;"<>,\./\?]).{8,}$');
+
+    if (!passwordPattern.hasMatch(password)) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Weak Password"),
+          content: Text(
+              "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character."),
+        ),
+      );
+      return;
+    }
+
+    // Check if passwords match
+    if (password != confirmPassword) {
+      // Show password mismatch dialog
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Passwords don't match!"),
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Attempt sign-up
+      await auth.signUpWithEmailPassword(email, password);
+      // Additional logic if needed on successful sign-up, like navigation
+    } catch (error) {
+      if (error.toString().contains('email-already-in-use')) {
+        // Show error dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('This email is already in use.'),
+            content: Text("Please enter a valid email."),
+          ),
+        );
+      } else {
+        // Show error dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('An unknown error occurred.'),
+          ),
+        );
+      }
     }
   }
 
@@ -81,7 +131,7 @@ class RegisterPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                //Email Textfield
+                //Email TextField
                 MyTextField(
                     controller: _emailController,
                     hintText: 'Email',
@@ -89,7 +139,7 @@ class RegisterPage extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                //Password Textfield
+                //Password TextField
                 MyTextField(
                     controller: _passwordController,
                     hintText: 'Password',
@@ -97,7 +147,7 @@ class RegisterPage extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                //Confirm Password Textfield
+                //Confirm Password TextField
                 MyTextField(
                     controller: _confirmPasswordController,
                     hintText: 'Confirm Password',

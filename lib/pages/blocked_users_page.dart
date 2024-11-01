@@ -36,7 +36,12 @@ class BlockedUsersPage extends StatelessWidget {
                 ),
               );
             },
-            child: Text("Unblock"),
+            child: Text(
+              "Unblock",
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
           ),
         ],
       ),

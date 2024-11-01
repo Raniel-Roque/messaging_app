@@ -101,14 +101,19 @@ class _HomePageState extends State<HomePage> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text("Loading..");
+          return Center(child: CircularProgressIndicator());
         }
+
+        // Convert the snapshot data to a list and sort it alphabetically
+        List<Map<String, dynamic>> users =
+            List<Map<String, dynamic>>.from(snapshot.data!);
+        users.sort((a, b) => a["email"].compareTo(b["email"]));
 
         return LiquidPullToRefresh(
           onRefresh: _handleRefresh,
           color: Theme.of(context).colorScheme.surfaceContainer,
           child: ListView(
-            children: snapshot.data!
+            children: users
                 .map<Widget>(
                     (userData) => _buildUserListItem(userData, context))
                 .toList(),

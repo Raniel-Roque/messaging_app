@@ -21,25 +21,23 @@ class _ChatPageState extends State<ChatPage> {
   // Text controller
   final TextEditingController _messageController = TextEditingController();
 
-  // Scroll Controller
-  final _scrollController = ScrollController();
-
   // Chat and auth service
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
-  // Send Message
+// Send Message
   void sendMessage() async {
     // Send if only there is an input
-    if (_messageController.text.isNotEmpty) {
+    String trimmedMessage = _messageController.text.trim();
+    if (trimmedMessage.isNotEmpty) {
       // Send message
       await _chatService.sendMessage(
-          widget.receiverID, _messageController.text);
+        widget.receiverID,
+        trimmedMessage,
+      );
 
       // Clear text
       _messageController.clear();
-      // Scroll down after sending a message
-      scrollDown(); // Scroll down after sending the message
     }
   }
 
@@ -51,14 +49,21 @@ class _ChatPageState extends State<ChatPage> {
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         elevation: 10,
       ),
-      body: Column(
-        children: [
-          // Display all messages
-          Expanded(child: _buildMessageList()),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Display all messages
+            Expanded(
+              child: SingleChildScrollView(
+                reverse: true,
+                child: _buildMessageList(),
+              ),
+            ),
 
-          // Display user input
-          _buildUserInput(),
-        ],
+            // Display user input
+            _buildUserInput(),
+          ],
+        ),
       ),
     );
   }
@@ -76,21 +81,11 @@ class _ChatPageState extends State<ChatPage> {
 
         // Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text("Loading...");
-        }
-
-        // Check if we have data and call scrollDown
-        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback(
-            (_) {
-              scrollDown(); // Call scrollDown after the messages are rendered
-            },
-          );
+          return CircularProgressIndicator();
         }
 
         // Return list view
-        return ListView(
-          controller: _scrollController,
+        return Column(
           children:
               snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
         );
@@ -166,24 +161,5 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
     );
-  }
-
-  //Method to scroll to bottom.
-  void scrollDown() {
-    // Check if the scroll controller has any position
-    if (_scrollController.hasClients) {
-      // Use a delay to ensure that the ListView has been built completely
-      Future.delayed(
-        Duration(milliseconds: 100),
-        () {
-          // Jump to the bottom
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeIn,
-          );
-        },
-      );
-    }
   }
 }

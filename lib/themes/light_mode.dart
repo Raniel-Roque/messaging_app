@@ -8,5 +8,6 @@ ThemeData lightMode = ThemeData(
     tertiary: Colors.grey.shade400,
     surfaceContainer: Colors.grey.shade400,
     inversePrimary: Colors.grey.shade900,
+    primaryFixed: Colors.black,
   ),
 );

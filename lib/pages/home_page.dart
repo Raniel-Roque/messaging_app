@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:messaging_app/components/my_drawer.dart';
+import 'package:messaging_app/components/my_bottom_navigation_bar.dart';
 import '../components/user_tile.dart';
 import '../services/auth/auth_service.dart';
 import '../services/chat/chat_service.dart';
@@ -18,10 +18,10 @@ class _HomePageState extends State<HomePage> {
   final AuthService _authService = AuthService();
 
   Future<void> _handleRefresh() async {
-    // This will force the stream to re-fetch data.
     setState(() {}); // Refreshes the UI to rebuild the user list.
     return await Future.delayed(
-        Duration(seconds: 2)); // Simulate a delay for refresh.
+      Duration(seconds: 2),
+    );
   }
 
   void _showOptions(BuildContext context, String userID) {
@@ -83,11 +83,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text(
+          'Home',
+          style: TextStyle(fontWeight: FontWeight.w200),
+        ),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-        elevation: 0,
       ),
-      drawer: MyDrawer(),
+      bottomNavigationBar: MyBottomNavigationBar(),
       body: _buildUserList(),
     );
   }

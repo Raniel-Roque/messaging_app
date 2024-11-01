@@ -83,7 +83,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Center(
+          child: Text('Home'),
+        ),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       ),
       bottomNavigationBar: MyBottomNavigationBar(),

@@ -21,10 +21,10 @@ class ChatBubble extends StatefulWidget {
   });
 
   @override
-  _ChatBubbleState createState() => _ChatBubbleState();
+  ChatBubbleState createState() => ChatBubbleState();
 }
 
-class _ChatBubbleState extends State<ChatBubble> {
+class ChatBubbleState extends State<ChatBubble> {
   bool _isTimestampVisible = false; // Track timestamp visibility
 
   // Time Formatter

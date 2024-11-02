@@ -42,6 +42,11 @@ class ChatService extends ChangeNotifier {
     final String currentUserEmail = _auth.currentUser!.email!;
     final Timestamp timestamp = Timestamp.now();
 
+    //Construct chat room ID for the two users (sorted to ensure uniqueness)
+    List<String> ids = [currentUserID, receiverID];
+    ids.sort(); //Sorts IDs which ensures 2 people have the same chatroomID
+    String chatroomID = ids.join('_');
+
     //Create a new message
     Message newMessage = Message(
       senderID: currentUserID,
@@ -50,11 +55,6 @@ class ChatService extends ChangeNotifier {
       message: message,
       timestamp: timestamp,
     );
-
-    //Construct chat room ID for the two users (sorted to ensure uniqueness)
-    List<String> ids = [currentUserID, receiverID];
-    ids.sort(); //Sorts IDs which ensures 2 people have the same chatroomID
-    String chatroomID = ids.join('_');
 
     //Add new message to database
     await _firestore
@@ -80,7 +80,7 @@ class ChatService extends ChangeNotifier {
   }
 
   //Report User
-  Future<void> reportUser(String messageID, String userID) async {
+  Future<void> reportMessage(String messageID, String userID) async {
     final currentUser = _auth.currentUser;
     final report = {
       'reportedBy': currentUser!.uid,
@@ -138,4 +138,7 @@ class ChatService extends ChangeNotifier {
       },
     );
   }
+
+  //Delete Message
+  Future<void> deleteMessage(String userID) async {}
 }

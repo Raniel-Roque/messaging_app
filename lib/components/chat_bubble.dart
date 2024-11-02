@@ -108,7 +108,7 @@ class ChatBubbleState extends State<ChatBubble> {
           // Report Button (Confirm)
           TextButton(
             onPressed: () {
-              ChatService().reportUser(messageID, userID);
+              ChatService().reportMessage(messageID, userID);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

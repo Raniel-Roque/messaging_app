@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:messaging_app/services/chat/chat_service.dart';
 import 'package:intl/intl.dart';
 
-class ChatBubble extends StatelessWidget {
+class ChatBubble extends StatefulWidget {
+  // Change to StatefulWidget
   final String message;
   final bool isCurrentUser;
   final String messageID;
@@ -19,13 +20,20 @@ class ChatBubble extends StatelessWidget {
     required this.timestamp,
   });
 
-  //Time Formatter
+  @override
+  _ChatBubbleState createState() => _ChatBubbleState();
+}
+
+class _ChatBubbleState extends State<ChatBubble> {
+  bool _isTimestampVisible = false; // Track timestamp visibility
+
+  // Time Formatter
   String _formatTime(Timestamp timestamp) {
     final DateTime dateTime = timestamp.toDate();
     return DateFormat.jm().format(dateTime);
   }
 
-  //Show options
+  // Show options
   void _showOptions(BuildContext context, String messageID, String userID) {
     showModalBottomSheet(
       context: context,
@@ -33,7 +41,7 @@ class ChatBubble extends StatelessWidget {
         return SafeArea(
           child: Wrap(
             children: [
-              //Report Message Button
+              // Report Message Button
               ListTile(
                 leading: const Icon(Icons.flag),
                 title: const Text('Report Message'),
@@ -43,7 +51,7 @@ class ChatBubble extends StatelessWidget {
                 },
               ),
 
-              //Block User
+              // Block User
               ListTile(
                 leading: const Icon(Icons.block),
                 title: const Text('Block User'),
@@ -59,7 +67,7 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  //Report message
+  // Report message
   void _reportMessage(BuildContext context, String messageID, String userID) {
     showDialog(
       context: context,
@@ -67,13 +75,13 @@ class ChatBubble extends StatelessWidget {
         title: Text("Report Message"),
         content: Text("Are you sure you want to report this message?"),
         actions: [
-          //Cancel button
+          // Cancel button
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text("Cancel"),
           ),
 
-          //Report Button (Confirm)
+          // Report Button (Confirm)
           TextButton(
             onPressed: () {
               ChatService().reportUser(messageID, userID);
@@ -96,7 +104,7 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  //Block User
+  // Block User
   void _blockUser(BuildContext context, String userID) {
     showDialog(
       context: context,
@@ -104,17 +112,17 @@ class ChatBubble extends StatelessWidget {
         title: Text("Block User"),
         content: Text("Are you sure you want to block this user?"),
         actions: [
-          //Cancel button
+          // Cancel button
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text("Cancel"),
           ),
 
-          //Block Button (Confirm)
+          // Block Button (Confirm)
           TextButton(
             onPressed: () {
               ChatService().blockUser(userID);
-              //Dismiss Dialog => Dismiss Chat => Home Page
+              // Dismiss Dialog => Dismiss Chat => Home Page
               Navigator.pop(context);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -138,35 +146,42 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isTimestampVisible = !_isTimestampVisible; // Toggle visibility
+        });
+      },
       onLongPress: () {
-        if (!isCurrentUser) {
-          _showOptions(context, messageID, userID);
+        if (!widget.isCurrentUser) {
+          _showOptions(context, widget.messageID, widget.userID);
         }
       },
       child: Column(
-        crossAxisAlignment:
-            isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: widget.isCurrentUser
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
-              color: isCurrentUser ? Colors.green : Colors.blue,
+              color: widget.isCurrentUser ? Colors.green : Colors.blue,
               borderRadius: BorderRadius.circular(12),
             ),
             padding: EdgeInsets.all(10),
             margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
             child: Text(
-              message,
+              widget.message,
               style: TextStyle(color: Colors.white),
             ),
           ),
-          Padding(
-            padding:
-                const EdgeInsets.only(right: 20.0, left: 20.0, bottom: 5.0),
-            child: Text(
-              _formatTime(timestamp),
-              style: TextStyle(color: Colors.grey[600], fontSize: 10),
+          if (_isTimestampVisible)
+            Padding(
+              padding:
+                  const EdgeInsets.only(right: 20.0, left: 20.0, bottom: 5.0),
+              child: Text(
+                _formatTime(widget.timestamp),
+                style: TextStyle(color: Colors.grey[600], fontSize: 10),
+              ),
             ),
-          ),
         ],
       ),
     );

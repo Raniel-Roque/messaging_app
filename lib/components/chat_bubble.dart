@@ -4,7 +4,6 @@ import 'package:messaging_app/services/chat/chat_service.dart';
 import 'package:intl/intl.dart';
 
 class ChatBubble extends StatefulWidget {
-  // Change to StatefulWidget
   final String message;
   final bool isCurrentUser;
   final String messageID;
@@ -33,8 +32,9 @@ class ChatBubbleState extends State<ChatBubble> {
     return DateFormat.jm().format(dateTime);
   }
 
-  // Show options
-  void _showOptions(BuildContext context, String messageID, String userID) {
+  // Show options for receiver
+  void _showOptionsForReceiver(
+      BuildContext context, String messageID, String userID) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -58,6 +58,30 @@ class ChatBubbleState extends State<ChatBubble> {
                 onTap: () {
                   Navigator.pop(context);
                   _blockUser(context, userID);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Show options for sender
+  void _showOptionsForSender(BuildContext context, String messageID) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              // Delete Message
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Delete Message'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteMessage(context, messageID);
                 },
               ),
             ],
@@ -143,18 +167,56 @@ class ChatBubbleState extends State<ChatBubble> {
     );
   }
 
+  void _deleteMessage(BuildContext context, String messageID) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Delete Message"),
+        content: Text("Are you sure you want to delete this message?"),
+        actions: [
+          // Cancel button
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"),
+          ),
+
+          // Delete Button (Confirm)
+          TextButton(
+            onPressed: () {
+              //ChatService().deleteMessage(widget.messageID);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Message has been deleted"),
+                ),
+              );
+            },
+            child: Text(
+              "Delete",
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isTimestampVisible = !_isTimestampVisible; // Toggle visibility
-        });
-      },
       onLongPress: () {
         if (!widget.isCurrentUser) {
-          _showOptions(context, widget.messageID, widget.userID);
+          _showOptionsForReceiver(context, widget.messageID, widget.userID);
+        } else if (widget.isCurrentUser) {
+          _showOptionsForSender(context, widget.messageID);
         }
+      },
+      onTap: () {
+        setState(() {
+          _isTimestampVisible = !_isTimestampVisible;
+        });
       },
       child: Column(
         crossAxisAlignment: widget.isCurrentUser

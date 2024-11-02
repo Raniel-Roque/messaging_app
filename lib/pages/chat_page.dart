@@ -118,7 +118,11 @@ class ChatPageState extends State<ChatPage> {
     // Is current user
     bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
 
-    // Align message to right = current. left = receiver
+    // Check if the message is marked as deleted
+    bool isDeleted =
+        data['messageDeleted'] ?? false; // Default to false if not present
+
+    // Align message to right = current user. left = receiver
     var alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
 
@@ -126,11 +130,17 @@ class ChatPageState extends State<ChatPage> {
       alignment: alignment,
       child: Column(
         children: [
+          // Conditional message display
           ChatBubble(
-            message: data["message"],
+            message: isDeleted
+                ? (isCurrentUser
+                    ? 'You have deleted this message'
+                    : 'User has deleted this message')
+                : data["message"], // Display the actual message
             isCurrentUser: isCurrentUser,
             messageID: doc.id,
-            userID: data["senderID"],
+            senderID: data["senderID"],
+            receiverID: data["receiverID"],
             timestamp: data["timestamp"],
           ),
         ],

@@ -65,9 +65,9 @@ class ChatService extends ChangeNotifier {
   }
 
   //Get message
-  Stream<QuerySnapshot> getMessages(String userID, otherUserID) {
+  Stream<QuerySnapshot> getMessages(String senderID, receiverID) {
     //Construct chatroom ID for 2 users
-    List<String> ids = [userID, otherUserID];
+    List<String> ids = [senderID, receiverID];
     ids.sort(); //Sorts IDs which ensures 2 people have the same chatroomID
     String chatroomID = ids.join('_');
 
@@ -80,12 +80,12 @@ class ChatService extends ChangeNotifier {
   }
 
   //Report User
-  Future<void> reportMessage(String messageID, String userID) async {
+  Future<void> reportMessage(String messageID, String senderID) async {
     final currentUser = _auth.currentUser;
     final report = {
       'reportedBy': currentUser!.uid,
       'messageID': messageID,
-      'messageOwnerID': userID,
+      'messageOwnerID': senderID,
       'timestamp': FieldValue.serverTimestamp(),
     };
 
@@ -93,13 +93,13 @@ class ChatService extends ChangeNotifier {
   }
 
   //Block User
-  Future<void> blockUser(String userID) async {
+  Future<void> blockUser(String senderID) async {
     final currentUser = _auth.currentUser;
     await _firestore
         .collection('Users')
         .doc(currentUser!.uid)
         .collection('BlockedUsers')
-        .doc(userID)
+        .doc(senderID)
         .set({});
     notifyListeners();
   }
@@ -117,10 +117,10 @@ class ChatService extends ChangeNotifier {
   }
 
   //Get Blocked Users Stream
-  Stream<List<Map<String, dynamic>>> getBlockedUsersStream(String userID) {
+  Stream<List<Map<String, dynamic>>> getBlockedUsersStream(String senderID) {
     return _firestore
         .collection('Users')
-        .doc(userID)
+        .doc(senderID)
         .collection('BlockedUsers')
         .snapshots()
         .asyncMap(
@@ -140,5 +140,20 @@ class ChatService extends ChangeNotifier {
   }
 
   //Delete Message
-  Future<void> deleteMessage(String userID) async {}
+  Future<void> deleteMessage(String messageID, senderID, receiverID) async {
+    //Construct chatroom ID for 2 users
+    List<String> ids = [senderID, receiverID];
+    ids.sort(); //Sorts IDs which ensures 2 people have the same chatroomID
+    String chatroomID = ids.join('_');
+
+    // Update the message to mark it as deleted
+    await _firestore
+        .collection("chat_rooms")
+        .doc(chatroomID)
+        .collection("messages")
+        .doc(messageID)
+        .update({"messageDeleted": true}); // Marking the message as deleted
+
+    notifyListeners();
+  }
 }

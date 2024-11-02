@@ -7,7 +7,8 @@ class ChatBubble extends StatefulWidget {
   final String message;
   final bool isCurrentUser;
   final String messageID;
-  final String userID;
+  final String senderID;
+  final String receiverID;
   final Timestamp timestamp;
 
   const ChatBubble({
@@ -15,7 +16,8 @@ class ChatBubble extends StatefulWidget {
     required this.message,
     required this.isCurrentUser,
     required this.messageID,
-    required this.userID,
+    required this.senderID,
+    required this.receiverID,
     required this.timestamp,
   });
 
@@ -34,7 +36,7 @@ class ChatBubbleState extends State<ChatBubble> {
 
   // Show options for receiver
   void _showOptionsForReceiver(
-      BuildContext context, String messageID, String userID) {
+      BuildContext context, String messageID, String senderID) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -47,7 +49,7 @@ class ChatBubbleState extends State<ChatBubble> {
                 title: const Text('Report Message'),
                 onTap: () {
                   Navigator.pop(context);
-                  _reportMessage(context, messageID, userID);
+                  _reportMessage(context, messageID, senderID);
                 },
               ),
 
@@ -57,7 +59,7 @@ class ChatBubbleState extends State<ChatBubble> {
                 title: const Text('Block User'),
                 onTap: () {
                   Navigator.pop(context);
-                  _blockUser(context, userID);
+                  _blockUser(context, senderID);
                 },
               ),
             ],
@@ -68,7 +70,8 @@ class ChatBubbleState extends State<ChatBubble> {
   }
 
   // Show options for sender
-  void _showOptionsForSender(BuildContext context, String messageID) {
+  void _showOptionsForSender(BuildContext context, String messageID,
+      String senderID, String receiverID) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -81,7 +84,7 @@ class ChatBubbleState extends State<ChatBubble> {
                 title: const Text('Delete Message'),
                 onTap: () {
                   Navigator.pop(context);
-                  _deleteMessage(context, messageID);
+                  _deleteMessage(context, messageID, senderID, receiverID);
                 },
               ),
             ],
@@ -92,7 +95,7 @@ class ChatBubbleState extends State<ChatBubble> {
   }
 
   // Report message
-  void _reportMessage(BuildContext context, String messageID, String userID) {
+  void _reportMessage(BuildContext context, String messageID, String senderID) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -108,7 +111,7 @@ class ChatBubbleState extends State<ChatBubble> {
           // Report Button (Confirm)
           TextButton(
             onPressed: () {
-              ChatService().reportMessage(messageID, userID);
+              ChatService().reportMessage(messageID, senderID);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -129,7 +132,7 @@ class ChatBubbleState extends State<ChatBubble> {
   }
 
   // Block User
-  void _blockUser(BuildContext context, String userID) {
+  void _blockUser(BuildContext context, String senderID) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -145,7 +148,7 @@ class ChatBubbleState extends State<ChatBubble> {
           // Block Button (Confirm)
           TextButton(
             onPressed: () {
-              ChatService().blockUser(userID);
+              ChatService().blockUser(senderID);
               // Dismiss Dialog => Dismiss Chat => Home Page
               Navigator.pop(context);
               Navigator.pop(context);
@@ -167,7 +170,8 @@ class ChatBubbleState extends State<ChatBubble> {
     );
   }
 
-  void _deleteMessage(BuildContext context, String messageID) {
+  void _deleteMessage(BuildContext context, String messageID, String senderID,
+      String otherUserID) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -183,7 +187,8 @@ class ChatBubbleState extends State<ChatBubble> {
           // Delete Button (Confirm)
           TextButton(
             onPressed: () {
-              //ChatService().deleteMessage(widget.messageID);
+              ChatService().deleteMessage(
+                  widget.messageID, widget.senderID, widget.receiverID);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -208,9 +213,10 @@ class ChatBubbleState extends State<ChatBubble> {
     return GestureDetector(
       onLongPress: () {
         if (!widget.isCurrentUser) {
-          _showOptionsForReceiver(context, widget.messageID, widget.userID);
+          _showOptionsForReceiver(context, widget.messageID, widget.senderID);
         } else if (widget.isCurrentUser) {
-          _showOptionsForSender(context, widget.messageID);
+          _showOptionsForSender(
+              context, widget.messageID, widget.senderID, widget.receiverID);
         }
       },
       onTap: () {

@@ -6,6 +6,7 @@ class Message {
   late final String receiverID;
   late final String message;
   late final Timestamp timestamp;
+  late final bool messageDeleted;
 
   Message({
     required this.senderID,
@@ -13,6 +14,7 @@ class Message {
     required this.receiverID,
     required this.message,
     required this.timestamp,
+    this.messageDeleted = false,
   });
 
   //Covert to map
@@ -24,6 +26,7 @@ class Message {
       'receiverID': receiverID,
       'message': message,
       'timestamp': timestamp,
+      'messageDeleted': messageDeleted,
     };
   }
 }

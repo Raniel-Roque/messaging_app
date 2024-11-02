@@ -37,6 +37,50 @@ class ChatBubbleState extends State<ChatBubble> {
     return DateFormat.jm().format(dateTime);
   }
 
+  // Show options for sender
+  void _showOptionsForSender(BuildContext context, String messageID,
+      String senderID, String receiverID) {
+    // If the message is deleted, do not show options
+    if (widget.isDeleted) return;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              // Copy Message
+              ListTile(
+                leading: const Icon(Icons.copy),
+                title: const Text('Copy Message'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _copyMessage(context, widget.message);
+                },
+              ),
+
+              // Delete Message
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Delete Message'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteMessage(context, messageID, senderID, receiverID);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    ).whenComplete(
+      () {
+        // Hide keyboard after modal is closed
+        FocusScope.of(context).unfocus();
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
+      },
+    );
+  }
+
   // Show options for receiver
   void _showOptionsForReceiver(
       BuildContext context, String messageID, String senderID) {
@@ -46,6 +90,16 @@ class ChatBubbleState extends State<ChatBubble> {
         return SafeArea(
           child: Wrap(
             children: [
+              // Copy Message
+              ListTile(
+                leading: const Icon(Icons.copy),
+                title: const Text('Copy Message'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _copyMessage(context, widget.message);
+                },
+              ),
+
               // Report Message Button
               ListTile(
                 leading: const Icon(Icons.flag),
@@ -63,40 +117,6 @@ class ChatBubbleState extends State<ChatBubble> {
                 onTap: () {
                   Navigator.pop(context);
                   _blockUser(context, senderID);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    ).whenComplete(
-      () {
-        // Hide keyboard after modal is closed
-        FocusScope.of(context).unfocus();
-        SystemChannels.textInput.invokeMethod('TextInput.hide');
-      },
-    );
-  }
-
-  // Show options for sender
-  void _showOptionsForSender(BuildContext context, String messageID,
-      String senderID, String receiverID) {
-    // If the message is deleted, do not show options
-    if (widget.isDeleted) return;
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              // Delete Message
-              ListTile(
-                leading: const Icon(Icons.delete),
-                title: const Text('Delete Message'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _deleteMessage(context, messageID, senderID, receiverID);
                 },
               ),
             ],
@@ -188,6 +208,18 @@ class ChatBubbleState extends State<ChatBubble> {
     );
   }
 
+  // Copy Message
+  void _copyMessage(BuildContext context, String message) {
+    Clipboard.setData(ClipboardData(text: message)).then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Message copied to clipboard"),
+        ),
+      );
+    });
+  }
+
+  // Delete Message
   void _deleteMessage(BuildContext context, String messageID, String senderID,
       String otherUserID) {
     showDialog(

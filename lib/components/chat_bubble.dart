@@ -82,9 +82,7 @@ class ChatBubbleState extends State<ChatBubble> {
   void _showOptionsForSender(BuildContext context, String messageID,
       String senderID, String receiverID) {
     // If the message is deleted, do not show options
-    if (widget.isDeleted) {
-      return;
-    }
+    if (widget.isDeleted) return;
 
     showModalBottomSheet(
       context: context,

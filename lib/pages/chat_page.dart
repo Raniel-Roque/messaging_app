@@ -15,10 +15,10 @@ class ChatPage extends StatefulWidget {
       {super.key, required this.receiverEmail, required this.receiverID});
 
   @override
-  _ChatPageState createState() => _ChatPageState();
+  ChatPageState createState() => ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class ChatPageState extends State<ChatPage> {
   // Text controller
   final TextEditingController _messageController = TextEditingController();
 

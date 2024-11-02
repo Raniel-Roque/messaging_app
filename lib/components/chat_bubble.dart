@@ -80,12 +80,9 @@ class ChatBubbleState extends State<ChatBubble> {
 
   // Show options for sender
   void _showOptionsForSender(BuildContext context, String messageID,
-      String senderID, String receiverID) async {
-    bool isDeleted = await ChatService()
-        .isMessageDeleted(widget.messageID, widget.senderID, widget.receiverID);
-
+      String senderID, String receiverID) {
     // If the message is deleted, do not show options
-    if (isDeleted) {
+    if (widget.isDeleted) {
       return;
     }
 
@@ -268,7 +265,7 @@ class ChatBubbleState extends State<ChatBubble> {
     );
   }
 
-// Method to build the chat bubble for deleted messages
+  // Method to build the chat bubble for deleted messages
   Widget _buildDeletedBubble() {
     return Container(
       decoration: BoxDecoration(
@@ -293,7 +290,7 @@ class ChatBubbleState extends State<ChatBubble> {
     );
   }
 
-// Method to build the chat bubble for non-deleted messages
+  // Method to build the chat bubble for non-deleted messages
   Widget _buildChatBubble() {
     return Container(
       decoration: BoxDecoration(

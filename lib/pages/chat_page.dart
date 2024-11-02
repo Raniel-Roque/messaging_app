@@ -26,7 +26,7 @@ class ChatPageState extends State<ChatPage> {
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
-// Send Message
+  // Send Message
   void sendMessage() async {
     //Send only if there is an input
     String trimmedMessage = _messageController.text.trim();
@@ -45,17 +45,23 @@ class ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         title: Text(widget.receiverEmail),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                reverse: true,
-                child: _buildMessageList(),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context)
+              .unfocus(); // Hide keyboard when tapping outside
+        },
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: _buildMessageList(),
+                ),
               ),
-            ),
-            _buildUserInput(),
-          ],
+              _buildUserInput(),
+            ],
+          ),
         ),
       ),
     );
@@ -118,10 +124,6 @@ class ChatPageState extends State<ChatPage> {
     // Is current user
     bool isCurrentUser = data['senderID'] == _authService.getCurrentUser()!.uid;
 
-    // Check if the message is marked as deleted
-    bool isDeleted =
-        data['messageDeleted'] ?? false; // Default to false if not present
-
     // Align message to right = current user. left = receiver
     var alignment =
         isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
@@ -130,18 +132,14 @@ class ChatPageState extends State<ChatPage> {
       alignment: alignment,
       child: Column(
         children: [
-          // Conditional message display
           ChatBubble(
-            message: isDeleted
-                ? (isCurrentUser
-                    ? 'You have deleted this message'
-                    : 'User has deleted this message')
-                : data["message"], // Display the actual message
+            message: data["message"],
             isCurrentUser: isCurrentUser,
             messageID: doc.id,
             senderID: data["senderID"],
             receiverID: data["receiverID"],
             timestamp: data["timestamp"],
+            isDeleted: data['messageDeleted'] ?? false,
           ),
         ],
       ),

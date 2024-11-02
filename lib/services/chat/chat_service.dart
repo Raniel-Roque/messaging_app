@@ -156,4 +156,26 @@ class ChatService extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  // Check if message is deleted
+  Future<bool> isMessageDeleted(
+      String messageID, String senderID, String receiverID) async {
+    List<String> ids = [senderID, receiverID];
+    ids.sort(); // Sort IDs for the chatroomID
+    String chatroomID = ids.join('_');
+
+    // Get the specific message document
+    DocumentSnapshot messageDoc = await _firestore
+        .collection("chat_rooms")
+        .doc(chatroomID)
+        .collection("messages")
+        .doc(messageID)
+        .get();
+
+    // Check if the document exists and safely cast the data to Map<String, dynamic>
+    final data = messageDoc.data() as Map<String, dynamic>?;
+
+    // Return the deletion status or false if the document doesn't exist
+    return data?['messageDeleted'] ?? false; // Default to false if not found
+  }
 }

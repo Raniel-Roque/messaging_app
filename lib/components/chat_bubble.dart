@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:messaging_app/services/chat/chat_service.dart';
 import 'package:intl/intl.dart';
 
@@ -10,6 +11,7 @@ class ChatBubble extends StatefulWidget {
   final String senderID;
   final String receiverID;
   final Timestamp timestamp;
+  final bool isDeleted;
 
   const ChatBubble({
     super.key,
@@ -19,6 +21,7 @@ class ChatBubble extends StatefulWidget {
     required this.senderID,
     required this.receiverID,
     required this.timestamp,
+    required this.isDeleted,
   });
 
   @override
@@ -66,12 +69,26 @@ class ChatBubbleState extends State<ChatBubble> {
           ),
         );
       },
+    ).whenComplete(
+      () {
+        // Hide keyboard after modal is closed
+        FocusScope.of(context).unfocus();
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
+      },
     );
   }
 
   // Show options for sender
   void _showOptionsForSender(BuildContext context, String messageID,
-      String senderID, String receiverID) {
+      String senderID, String receiverID) async {
+    bool isDeleted = await ChatService()
+        .isMessageDeleted(widget.messageID, widget.senderID, widget.receiverID);
+
+    // If the message is deleted, do not show options
+    if (isDeleted) {
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -90,6 +107,12 @@ class ChatBubbleState extends State<ChatBubble> {
             ],
           ),
         );
+      },
+    ).whenComplete(
+      () {
+        // Hide keyboard after modal is closed
+        FocusScope.of(context).unfocus();
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
       },
     );
   }
@@ -210,11 +233,12 @@ class ChatBubbleState extends State<ChatBubble> {
 
   @override
   Widget build(BuildContext context) {
+    // GestureDetector for both chat bubble states
     return GestureDetector(
       onLongPress: () {
         if (!widget.isCurrentUser) {
           _showOptionsForReceiver(context, widget.messageID, widget.senderID);
-        } else if (widget.isCurrentUser) {
+        } else {
           _showOptionsForSender(
               context, widget.messageID, widget.senderID, widget.receiverID);
         }
@@ -226,21 +250,10 @@ class ChatBubbleState extends State<ChatBubble> {
       },
       child: Column(
         crossAxisAlignment: widget.isCurrentUser
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
+            ? CrossAxisAlignment.end // = Sender / User
+            : CrossAxisAlignment.start, // = Receiver
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: widget.isCurrentUser ? Colors.green : Colors.blue,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-            child: Text(
-              widget.message,
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
+          widget.isDeleted ? _buildDeletedBubble() : _buildChatBubble(),
           if (_isTimestampVisible)
             Padding(
               padding:
@@ -251,6 +264,51 @@ class ChatBubbleState extends State<ChatBubble> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+// Method to build the chat bubble for deleted messages
+  Widget _buildDeletedBubble() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey,
+          width: 2,
+        ),
+      ),
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+      child: Text(
+        widget.isCurrentUser
+            ? 'You have deleted this message'
+            : 'User has deleted this message',
+        style: TextStyle(
+          color: Colors.grey,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    );
+  }
+
+// Method to build the chat bubble for non-deleted messages
+  Widget _buildChatBubble() {
+    return Container(
+      decoration: BoxDecoration(
+        color: widget.isCurrentUser
+            ? Colors.green // = Sender / User
+            : Colors.blue, // = Receiver
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+      child: Text(
+        widget.message,
+        style: TextStyle(
+          color: Colors.white,
+        ),
       ),
     );
   }

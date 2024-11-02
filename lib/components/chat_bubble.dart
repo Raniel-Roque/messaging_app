@@ -214,6 +214,7 @@ class ChatBubbleState extends State<ChatBubble> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Message copied to clipboard"),
+          duration: Duration(milliseconds: 500),
         ),
       );
     });
@@ -240,11 +241,6 @@ class ChatBubbleState extends State<ChatBubble> {
               ChatService().deleteMessage(
                   widget.messageID, widget.senderID, widget.receiverID);
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Message has been deleted"),
-                ),
-              );
             },
             child: Text(
               "Delete",

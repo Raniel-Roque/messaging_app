@@ -1,18 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/services/chat/chat_service.dart';
+import 'package:intl/intl.dart';
 
 class ChatBubble extends StatelessWidget {
   final String message;
   final bool isCurrentUser;
   final String messageID;
   final String userID;
+  final Timestamp timestamp;
 
-  const ChatBubble(
-      {super.key,
-      required this.message,
-      required this.isCurrentUser,
-      required this.messageID,
-      required this.userID});
+  const ChatBubble({
+    super.key,
+    required this.message,
+    required this.isCurrentUser,
+    required this.messageID,
+    required this.userID,
+    required this.timestamp,
+  });
+
+  //Time Formatter
+  String _formatTime(Timestamp timestamp) {
+    final DateTime dateTime = timestamp.toDate();
+    return DateFormat.jm().format(dateTime);
+  }
 
   //Show options
   void _showOptions(BuildContext context, String messageID, String userID) {
@@ -129,21 +140,34 @@ class ChatBubble extends StatelessWidget {
     return GestureDetector(
       onLongPress: () {
         if (!isCurrentUser) {
-          //Show Options
           _showOptions(context, messageID, userID);
         }
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: isCurrentUser ? Colors.green : Colors.blue,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-        child: Text(
-          message,
-          style: TextStyle(color: Colors.white),
-        ),
+      child: Column(
+        crossAxisAlignment:
+            isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: isCurrentUser ? Colors.green : Colors.blue,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+            child: Text(
+              message,
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.only(right: 20.0, left: 20.0, bottom: 5.0),
+            child: Text(
+              _formatTime(timestamp),
+              style: TextStyle(color: Colors.grey[600], fontSize: 10),
+            ),
+          ),
+        ],
       ),
     );
   }

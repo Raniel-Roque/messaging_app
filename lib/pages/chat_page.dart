@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:messaging_app/components/chat_bubble.dart';
 import 'package:messaging_app/components/my_text_field.dart';
 
@@ -27,16 +28,13 @@ class _ChatPageState extends State<ChatPage> {
 
 // Send Message
   void sendMessage() async {
-    // Send if only there is an input
+    //Send only if there is an input
     String trimmedMessage = _messageController.text.trim();
     if (trimmedMessage.isNotEmpty) {
-      // Send message
       await _chatService.sendMessage(
         widget.receiverID,
         trimmedMessage,
       );
-
-      // Clear text
       _messageController.clear();
     }
   }
@@ -46,21 +44,16 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.receiverEmail),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-        elevation: 10,
       ),
       body: SafeArea(
         child: Column(
           children: [
-            // Display all messages
             Expanded(
               child: SingleChildScrollView(
                 reverse: true,
                 child: _buildMessageList(),
               ),
             ),
-
-            // Display user input
             _buildUserInput(),
           ],
         ),
@@ -74,20 +67,45 @@ class _ChatPageState extends State<ChatPage> {
     return StreamBuilder(
       stream: _chatService.getMessages(widget.receiverID, senderID),
       builder: (context, snapshot) {
-        // Errors
         if (snapshot.hasError) {
           return const Text("Error");
         }
-
-        // Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
         }
 
-        // Return list view
+        List<DocumentSnapshot> docs = snapshot.data!.docs;
+        List<Widget> messageWidgets = [];
+        String? lastDate;
+
+        for (var doc in docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          Timestamp timestamp = data['timestamp'];
+          DateTime dateTime = timestamp.toDate();
+          String formattedDate = DateFormat('MMMM d, yyyy').format(dateTime);
+
+          // Add a date header if the date changes
+          if (lastDate != formattedDate) {
+            messageWidgets.add(
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Center(
+                  child: Text(
+                    formattedDate,
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ),
+              ),
+            );
+            lastDate = formattedDate;
+          }
+
+          // Add each message using _buildMessageItem
+          messageWidgets.add(_buildMessageItem(doc));
+        }
+
         return Column(
-          children:
-              snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
+          children: messageWidgets,
         );
       },
     );
@@ -113,6 +131,7 @@ class _ChatPageState extends State<ChatPage> {
             isCurrentUser: isCurrentUser,
             messageID: doc.id,
             userID: data["senderID"],
+            timestamp: data["timestamp"],
           ),
         ],
       ),
@@ -125,9 +144,7 @@ class _ChatPageState extends State<ChatPage> {
       padding: EdgeInsets.only(top: 5.0, bottom: 10.0),
       child: Row(
         children: [
-          SizedBox(
-            width: 15,
-          ),
+          SizedBox(width: 15),
           Expanded(
             child: MyTextField(
               controller: _messageController,
@@ -136,26 +153,14 @@ class _ChatPageState extends State<ChatPage> {
               isMultiLine: true,
             ),
           ),
-
-          SizedBox(
-            width: 10,
-          ),
-
-          // Send Button
+          SizedBox(width: 10),
           Container(
-            decoration: BoxDecoration(
-              color: Colors.green,
-              shape: BoxShape.circle,
-            ),
+            decoration:
+                BoxDecoration(color: Colors.green, shape: BoxShape.circle),
             margin: EdgeInsets.only(right: 20),
             child: IconButton(
-              onPressed: () {
-                sendMessage();
-              },
-              icon: Icon(
-                Icons.arrow_upward,
-                color: Colors.white,
-              ),
+              onPressed: sendMessage,
+              icon: Icon(Icons.arrow_upward, color: Colors.white),
             ),
           ),
         ],

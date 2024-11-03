@@ -90,15 +90,16 @@ class ChatBubbleState extends State<ChatBubble> {
         return SafeArea(
           child: Wrap(
             children: [
-              // Copy Message
-              ListTile(
-                leading: const Icon(Icons.copy),
-                title: const Text('Copy Message'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _copyMessage(context, widget.message);
-                },
-              ),
+              if(!widget.isDeleted)
+                // Copy Message
+                ListTile(
+                  leading: const Icon(Icons.copy),
+                  title: const Text('Copy Message'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _copyMessage(context, widget.message);
+                  },
+                ),
 
               // Report Message Button
               ListTile(

@@ -37,6 +37,7 @@ class LoginPage extends StatelessWidget {
         'Required Fields',
         'Please enter your email and password.',
       );
+      _passwordController.clear();
       return;
     }
 
@@ -46,6 +47,7 @@ class LoginPage extends StatelessWidget {
         'Invalid Email',
         'Please enter a valid email address.',
       );
+      _passwordController.clear();
       return;
     }
 
@@ -54,13 +56,12 @@ class LoginPage extends StatelessWidget {
       await authService.signInWithEmailPassword(email, password);
     } catch (e) {
       // Check the error message string for specific cases (User not Found & Invalid Credentials)
-      if (e.toString().contains('user-not-found')) {
+      if (e.toString().contains('invalid-credential')) {
         showErrorDialog(
           'User Not Found',
-          'No account found for this email. Please check the email or register for a new account.',
+          'No account found for this email. Please check your email or register for a new account.',
         );
       } else if (e.toString().contains('wrong-password') ||
-          e.toString().contains('invalid-credential') ||
           e.toString().contains('invalid-email')) {
         showErrorDialog(
           'Incorrect Email or Password',
@@ -72,6 +73,7 @@ class LoginPage extends StatelessWidget {
           'An unknown error occurred. Please try again later.',
         );
       }
+      _passwordController.clear();
     }
   }
 
@@ -96,10 +98,33 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 //Welcome Back Message
-                Text(
-                  "Welcome back you've been missed!",
-                  style: TextStyle(
-                    fontSize: 16,
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Whispr",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade600,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ":",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Theme.of(context).colorScheme.primaryFixed,
+                        ),
+                      ),
+                      TextSpan(
+                        text: " Connect with your community",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          color: Theme.of(context).colorScheme.primaryFixed,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 

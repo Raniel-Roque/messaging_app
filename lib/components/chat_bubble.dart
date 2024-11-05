@@ -74,9 +74,10 @@ class ChatBubbleState extends State<ChatBubble> {
       },
     ).whenComplete(
       () {
-        // Hide keyboard after modal is closed
-        FocusScope.of(context).unfocus();
-        SystemChannels.textInput.invokeMethod('TextInput.hide');
+        if (mounted) {
+          FocusScope.of(context).unfocus();
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+        }
       },
     );
   }
@@ -90,7 +91,7 @@ class ChatBubbleState extends State<ChatBubble> {
         return SafeArea(
           child: Wrap(
             children: [
-              if(!widget.isDeleted)
+              if (!widget.isDeleted)
                 // Copy Message
                 ListTile(
                   leading: const Icon(Icons.copy),
@@ -126,9 +127,11 @@ class ChatBubbleState extends State<ChatBubble> {
       },
     ).whenComplete(
       () {
-        // Hide keyboard after modal is closed
-        FocusScope.of(context).unfocus();
-        SystemChannels.textInput.invokeMethod('TextInput.hide');
+        if (mounted) {
+          // Hide keyboard after modal is closed
+          FocusScope.of(context).unfocus();
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+        }
       },
     );
   }
@@ -211,14 +214,18 @@ class ChatBubbleState extends State<ChatBubble> {
 
   // Copy Message
   void _copyMessage(BuildContext context, String message) {
-    Clipboard.setData(ClipboardData(text: message)).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Message copied to clipboard"),
-          duration: Duration(milliseconds: 500),
-        ),
-      );
-    });
+    Clipboard.setData(ClipboardData(text: message)).then(
+      (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Message copied to clipboard"),
+              duration: Duration(milliseconds: 500),
+            ),
+          );
+        }
+      },
+    );
   }
 
   // Delete Message

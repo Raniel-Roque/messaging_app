@@ -48,6 +48,7 @@ class RegisterPage extends StatelessWidget {
         "Invalid email format!",
         "Please enter a valid email.",
       );
+      _confirmPasswordController.clear();
       return;
     }
 
@@ -60,6 +61,7 @@ class RegisterPage extends StatelessWidget {
         "Weak Password",
         "Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.",
       );
+      _confirmPasswordController.clear();
       return;
     }
 
@@ -69,6 +71,7 @@ class RegisterPage extends StatelessWidget {
         "Passwords don't match!",
         "Please ensure both passwords are the same.",
       );
+      _confirmPasswordController.clear();
       return;
     }
 
@@ -93,6 +96,7 @@ class RegisterPage extends StatelessWidget {
           "Please try again later.",
         );
       }
+      _confirmPasswordController.clear();
     }
   }
 

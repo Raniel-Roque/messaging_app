@@ -31,11 +31,11 @@ class ChatPageState extends State<ChatPage> {
     //Send only if there is an input
     String trimmedMessage = _messageController.text.trim();
     if (trimmedMessage.isNotEmpty) {
+      _messageController.clear();
       await _chatService.sendMessage(
         widget.receiverID,
         trimmedMessage,
       );
-      _messageController.clear();
     }
   }
 

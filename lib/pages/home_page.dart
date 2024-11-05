@@ -114,10 +114,12 @@ class HomePageState extends State<HomePage> {
           onRefresh: _handleRefresh,
           color: Theme.of(context).colorScheme.surfaceContainer,
           child: ListView(
-            children: users
-                .map<Widget>(
-                    (userData) => _buildUserListItem(userData, context))
-                .toList(),
+            children: [
+              SizedBox(height: 10.0),
+              ...users.map<Widget>(
+                (userData) => _buildUserListItem(userData, context),
+              ),
+            ],
           ),
         );
       },

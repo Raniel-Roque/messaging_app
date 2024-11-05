@@ -56,12 +56,8 @@ class LoginPage extends StatelessWidget {
       await authService.signInWithEmailPassword(email, password);
     } catch (e) {
       // Check the error message string for specific cases (User not Found & Invalid Credentials)
-      if (e.toString().contains('invalid-credential')) {
-        showErrorDialog(
-          'User Not Found',
-          'No account found for this email. Please check your email or register for a new account.',
-        );
-      } else if (e.toString().contains('wrong-password') ||
+      if (e.toString().contains('wrong-password') ||
+          e.toString().contains('invalid-credential') ||
           e.toString().contains('invalid-email')) {
         showErrorDialog(
           'Incorrect Email or Password',

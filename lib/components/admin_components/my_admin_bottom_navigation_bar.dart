@@ -75,10 +75,10 @@ class MyAdminBottomNavigationBar extends StatelessWidget {
       onTap: (index) {
         switch (index) {
           case 0:
-            // Navigate to Admin Home
+            // Navigate to Admin
             Navigator.popUntil(context, (route) => route.isFirst);
             break;
-          case 3:
+          case 2:
             // Navigate to Settings
             Navigator.push(
               context,
@@ -87,7 +87,7 @@ class MyAdminBottomNavigationBar extends StatelessWidget {
               ),
             );
             break;
-          case 4:
+          case 3:
             // Show logout confirmation
             _showLogoutConfirmation(context);
             break;

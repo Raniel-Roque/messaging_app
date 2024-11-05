@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../pages/settings_page.dart';
-import '../services/auth/auth_service.dart';
+import '../../pages/user_pages/settings_page.dart';
+import '../../services/auth/auth_service.dart';
 
 class MyBottomNavigationBar extends StatelessWidget {
   const MyBottomNavigationBar({super.key});

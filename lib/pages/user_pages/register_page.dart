@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../components/my_button.dart';
-import '../components/my_text_field.dart';
-import '../services/auth/auth_service.dart';
+import '../../components/my_button.dart';
+import '../../components/my_text_field.dart';
+import '../../services/auth/auth_service.dart';
 import 'package:email_validator/email_validator.dart';
 
 class RegisterPage extends StatelessWidget {

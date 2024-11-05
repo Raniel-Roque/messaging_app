@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:messaging_app/components/my_bottom_navigation_bar.dart';
-import '../components/user_tile.dart';
-import '../services/auth/auth_service.dart';
-import '../services/chat/chat_service.dart';
-import 'chat_page.dart';
+import '../../components/admin_components/my_admin_bottom_navigation_bar.dart';
+import '../../components/user_tile.dart';
+import '../../services/auth/auth_service.dart';
+import '../../services/chat/chat_service.dart';
+import '../user_pages/chat_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class AdminPage extends StatefulWidget {
+  const AdminPage({super.key});
 
   @override
-  HomePageState createState() => HomePageState();
+  AdminPageState createState() => AdminPageState();
 }
 
-class HomePageState extends State<HomePage> {
+class AdminPageState extends State<AdminPage> {
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
@@ -24,71 +24,16 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  void _showOptions(BuildContext context, String userID) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.block),
-                title: const Text('Block User'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _blockUser(context, userID);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _blockUser(BuildContext context, String userID) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Block User"),
-        content: Text("Are you sure you want to block this user?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              _chatService.blockUser(userID);
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("User has been blocked"),
-                ),
-              );
-            },
-            child: Text(
-              "Block",
-              style: TextStyle(
-                color: Colors.red,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text('Home'),
+          child: Text('Admin Page'),
         ),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       ),
-      bottomNavigationBar: MyBottomNavigationBar(),
+      bottomNavigationBar: MyAdminBottomNavigationBar(),
       body: _buildUserList(),
     );
   }
@@ -142,9 +87,7 @@ class HomePageState extends State<HomePage> {
             ),
           );
         },
-        onLongPress: () {
-          _showOptions(context, userData["uid"]);
-        },
+        onLongPress: () {},
       );
     } else {
       return Container();

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:messaging_app/components/my_bottom_navigation_bar.dart';
-import '../components/user_tile.dart';
-import '../services/auth/auth_service.dart';
-import '../services/chat/chat_service.dart';
+import 'package:messaging_app/components/user_components/my_bottom_navigation_bar.dart';
+import '../../components/user_tile.dart';
+import '../../services/auth/auth_service.dart';
+import '../../services/chat/chat_service.dart';
 import 'chat_page.dart';
 
-class AdminPage extends StatefulWidget {
-  const AdminPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  AdminPageState createState() => AdminPageState();
+  HomePageState createState() => HomePageState();
 }
 
-class AdminPageState extends State<AdminPage> {
+class HomePageState extends State<HomePage> {
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
@@ -84,7 +84,7 @@ class AdminPageState extends State<AdminPage> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text('Admin Page'),
+          child: Text('Home'),
         ),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       ),

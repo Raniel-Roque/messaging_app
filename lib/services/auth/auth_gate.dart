@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../pages/home_page.dart';
-import '../../pages/admin_page.dart'; // Import the AdminPage
+import '../../pages/user_pages/home_page.dart';
+import '../../pages/admin_pages/admin_page.dart'; // Import the AdminPage
 import 'login_or_register.dart';
 
 // Listens to every state whether signed in or out

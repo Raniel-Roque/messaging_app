@@ -24,6 +24,41 @@ class AdminPageState extends State<AdminPage> {
     );
   }
 
+  void _showOptions(BuildContext context, String userID) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.account_circle),
+                title: const Text('User Details'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.lock_reset),
+                title: const Text('Reset Password'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete_forever),
+                title: const Text('Delete Account'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,15 +112,7 @@ class AdminPageState extends State<AdminPage> {
       return UserTile(
         text: userData["email"],
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatPage(
-                receiverEmail: userData["email"],
-                receiverID: userData["uid"],
-              ),
-            ),
-          );
+          _showOptions(context, userData["uid"]);
         },
         onLongPress: () {},
       );

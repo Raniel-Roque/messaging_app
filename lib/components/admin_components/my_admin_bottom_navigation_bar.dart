@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../pages/user_pages/settings_page.dart';
+import '../../pages/admin_pages/admin_reported_users.dart';
+import '../../pages/admin_pages/admin_settings_page.dart';
 import '../../services/auth/auth_service.dart';
 
 class MyAdminBottomNavigationBar extends StatelessWidget {
@@ -56,10 +57,6 @@ class MyAdminBottomNavigationBar extends StatelessWidget {
       unselectedItemColor: Theme.of(context).colorScheme.primaryFixed,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.manage_accounts),
-          label: 'Manage Accounts',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.report),
           label: 'Reports',
         ),
@@ -75,19 +72,24 @@ class MyAdminBottomNavigationBar extends StatelessWidget {
       onTap: (index) {
         switch (index) {
           case 0:
-            // Navigate to Admin
-            Navigator.popUntil(context, (route) => route.isFirst);
+            // Navigate to Reported Users
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReportedUsersPage(),
+              ),
+            );
             break;
-          case 2:
+          case 1:
             // Navigate to Settings
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SettingsPage(),
+                builder: (context) => AdminSettingsPage(),
               ),
             );
             break;
-          case 3:
+          case 2:
             // Show logout confirmation
             _showLogoutConfirmation(context);
             break;

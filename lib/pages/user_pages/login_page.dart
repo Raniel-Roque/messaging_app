@@ -1,8 +1,8 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:messaging_app/components/my_button.dart';
-import 'package:messaging_app/components/my_text_field.dart';
-import 'package:messaging_app/services/auth/auth_service.dart';
+import 'package:Whispr/components/my_button.dart';
+import 'package:Whispr/components/my_text_field.dart';
+import 'package:Whispr/services/auth/auth_service.dart';
 
 class LoginPage extends StatelessWidget {
   final void Function()? onTap;

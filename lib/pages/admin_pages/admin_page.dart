@@ -4,7 +4,6 @@ import '../../components/admin_components/my_admin_bottom_navigation_bar.dart';
 import '../../components/user_tile.dart';
 import '../../services/auth/auth_service.dart';
 import '../../services/chat/chat_service.dart';
-import '../user_pages/chat_page.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});

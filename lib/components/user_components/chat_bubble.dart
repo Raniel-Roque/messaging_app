@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:messaging_app/services/chat/chat_service.dart';
+import 'package:Whispr/services/chat/chat_service.dart';
 import 'package:intl/intl.dart';
 
 class ChatBubble extends StatefulWidget {

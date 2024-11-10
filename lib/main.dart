@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'package:messaging_app/firebase_options.dart';
-import 'package:messaging_app/pages/user_pages/home_page.dart';
-//import 'package:messaging_app/services/api/firebase_api.dart';
-import 'package:messaging_app/services/auth/auth_gate.dart';
-import 'package:messaging_app/themes/theme_provider.dart';
+import 'package:Whispr/firebase_options.dart';
+import 'package:Whispr/pages/user_pages/home_page.dart';
+//import 'package:Whispr/services/api/firebase_api.dart';
+import 'package:Whispr/services/auth/auth_gate.dart';
+import 'package:Whispr/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

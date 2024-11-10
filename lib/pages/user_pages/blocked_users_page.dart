@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/components/user_tile.dart';
+import 'package:Whispr/components/user_tile.dart';
 
 import '../../services/auth/auth_service.dart';
 import '../../services/chat/chat_service.dart';

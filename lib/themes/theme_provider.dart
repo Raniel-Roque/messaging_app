@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
-import 'package:messaging_app/themes/dark_mode.dart';
+import 'package:Whispr/themes/dark_mode.dart';
 import 'light_mode.dart';
 
 class ThemeProvider extends ChangeNotifier {

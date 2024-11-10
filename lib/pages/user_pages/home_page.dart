@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:messaging_app/components/user_components/my_bottom_navigation_bar.dart';
+import 'package:Whispr/components/user_components/my_bottom_navigation_bar.dart';
 import '../../components/user_tile.dart';
 import '../../services/auth/auth_service.dart';
 import '../../services/chat/chat_service.dart';

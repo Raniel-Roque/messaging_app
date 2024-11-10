@@ -18,18 +18,24 @@ class ChatService extends ChangeNotifier {
         .collection('BlockedUsers')
         .snapshots()
         .asyncMap((snapshot) async {
-      //Get blocked user IDs
+      // Get blocked user IDs
       final blockedUserIDs = snapshot.docs.map((doc) => doc.id).toList();
 
-      //Get all users
+      // Get all users
       final usersSnapshot = await _firestore.collection('Users').get();
 
-      //Return as stream list
-
+      // Return filtered list: only users with the 'user' role and not blocked
       return usersSnapshot.docs
-          .where((doc) =>
-              doc.data()['email'] != currentUser.email &&
-              !blockedUserIDs.contains(doc.id))
+          .where((doc) {
+            final userData = doc.data();
+            final role =
+                userData['role']; // Assuming role is stored under 'role'
+
+            // Only include users with 'user' role and not blocked
+            return role == 'user' &&
+                doc.id != currentUser.uid && // Exclude current user
+                !blockedUserIDs.contains(doc.id); // Exclude blocked users
+          })
           .map((doc) => doc.data())
           .toList();
     });
@@ -177,5 +183,87 @@ class ChatService extends ChangeNotifier {
 
     // Return the deletion status or false if the document doesn't exist
     return data?['messageDeleted'] ?? false; // Default to false if not found
+  }
+
+  //Admin Stuff
+
+  // Delete a specific report
+  Future<void> deleteReport(String reportID) async {
+    try {
+      // Delete the report from Firestore
+      await _firestore.collection('Reports').doc(reportID).delete();
+      notifyListeners(); // Notify listeners to refresh the data
+    } catch (e) {
+      print("Error deleting report: $e");
+      rethrow; // Rethrow error if needed for further handling
+    }
+  }
+
+  // Get Reports Stream
+  Stream<List<Map<String, dynamic>>> getReportedUsersStream() {
+    return _firestore.collection('Reports').snapshots().asyncMap(
+      (snapshot) async {
+        final reportDocs = snapshot.docs;
+
+        // Retrieve data for each report document
+        final reportsData = await Future.wait(
+          reportDocs.map((doc) async {
+            final reportData = doc.data();
+
+            // Get the report ID (doc.id)
+            final reportID = doc.id;
+
+            // Fetch the user details of the 'reportedBy' user (the one who reported)
+            final reportedByUserID = reportData['reportedBy'];
+            final reportedByUserDoc = await _firestore
+                .collection('Users')
+                .doc(reportedByUserID)
+                .get();
+            final reportedByUserData =
+                reportedByUserDoc.data() as Map<String, dynamic>;
+
+            // Fetch the message ID and message owner details
+            final messageOwnerID = reportData['messageOwnerID'];
+            final messageID = reportData['messageID'];
+
+            final messageOwnerUserDoc =
+                await _firestore.collection('Users').doc(messageOwnerID).get();
+            final messageOwnerUserData =
+                messageOwnerUserDoc.data() as Map<String, dynamic>;
+
+            // Construct chatroom ID for the 2 users who are involved in the reported message
+            List<String> ids = [reportedByUserID, messageOwnerID];
+            ids.sort(); // Sorts IDs which ensures 2 people have the same chatroomID
+            String chatroomID = ids.join('_');
+
+            // Fetch the actual message content from the correct chatroom and message
+            final messageDoc = await _firestore
+                .collection('chat_rooms')
+                .doc(
+                    chatroomID) // Use the chatroomID constructed from reportedByUserID and messageOwnerID
+                .collection('messages')
+                .doc(messageID)
+                .get();
+
+            final messageContent = messageDoc.exists
+                ? messageDoc.data()!['message'] // Retrieve the message content
+                : 'Message not found';
+
+            // Combine the report data with user data (reportedBy, messageOwner, and message content)
+            return {
+              'report': reportData, // Original report details
+              'reportID': reportID, // Add the report ID
+              'reportedByUser':
+                  reportedByUserData, // Data of the user who reported
+              'messageOwnerUser':
+                  messageOwnerUserData, // Data of the user who owned the message
+              'messageContent': messageContent, // The actual message content
+            };
+          }),
+        );
+
+        return reportsData;
+      },
+    );
   }
 }

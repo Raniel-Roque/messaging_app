@@ -113,7 +113,6 @@ class AdminPageState extends State<AdminPage> {
         onTap: () {
           _showOptions(context, userData["uid"]);
         },
-        onLongPress: () {},
       );
     } else {
       return Container();

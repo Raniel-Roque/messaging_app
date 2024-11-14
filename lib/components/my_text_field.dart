@@ -5,6 +5,8 @@ class MyTextField extends StatelessWidget {
   final String hintText;
   final bool obscureText;
   final bool isMultiLine; // New parameter to indicate multi-line support
+  final bool
+      isUnderlined; // New parameter to indicate underline type (default is false)
 
   const MyTextField({
     super.key,
@@ -12,6 +14,7 @@ class MyTextField extends StatelessWidget {
     required this.hintText,
     required this.obscureText,
     this.isMultiLine = false,
+    this.isUnderlined = false, // Default is false, meaning outlined by default
   });
 
   @override
@@ -27,14 +30,29 @@ class MyTextField extends StatelessWidget {
           ? TextInputAction.newline
           : TextInputAction.done, // Set action
       decoration: InputDecoration(
-        enabledBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(color: Theme.of(context).colorScheme.secondary),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
-        ),
-        fillColor: Theme.of(context).colorScheme.secondary,
+        // Border configuration based on whether it's underlined or not
+        enabledBorder: isUnderlined
+            ? UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.secondary),
+              )
+            : OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.secondary),
+              ),
+        focusedBorder: isUnderlined
+            ? UnderlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              )
+            : OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: Theme.of(context).colorScheme.primary),
+              ),
+        // Dynamically set fill color based on whether it's underlined
+        fillColor: isUnderlined
+            ? Theme.of(context).colorScheme.surface
+            : Theme.of(context).colorScheme.secondary,
         filled: true,
         hintText: hintText,
         hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),

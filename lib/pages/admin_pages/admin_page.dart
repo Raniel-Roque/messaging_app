@@ -23,47 +23,47 @@ class AdminPageState extends State<AdminPage> {
     );
   }
 
-  void _showOptions(BuildContext context, String userID) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.account_circle),
-                title: const Text('User Details'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.lock_reset),
-                title: const Text('Reset Password'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete_forever),
-                title: const Text('Delete Account'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // void _showOptions(BuildContext context, String userID) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (context) {
+  //       return SafeArea(
+  //         child: Wrap(
+  //           children: [
+  //             ListTile(
+  //               leading: const Icon(Icons.account_circle),
+  //               title: const Text('User Details'),
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(Icons.lock_reset),
+  //               title: const Text('Reset Password'),
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //             ListTile(
+  //               leading: const Icon(Icons.delete_forever),
+  //               title: const Text('Delete Account'),
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text('Admin Page'),
+          child: Text('Admin Page - List of Users'),
         ),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       ),
@@ -111,7 +111,7 @@ class AdminPageState extends State<AdminPage> {
       return UserTile(
         text: userData["email"],
         onTap: () {
-          _showOptions(context, userData["uid"]);
+          //_showOptions(context, userData["uid"]);
         },
       );
     } else {

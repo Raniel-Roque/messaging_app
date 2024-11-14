@@ -85,10 +85,10 @@ class LoginPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //Logo
-                Icon(
-                  Icons.message,
-                  size: 80,
-                  color: Theme.of(context).colorScheme.primary,
+                Image.asset(
+                  'images/logo.png',
+                  height: 80, // Adjust size if necessary
+                  width: 105, // Adjust size if necessary
                 ),
 
                 const SizedBox(height: 20),
@@ -102,7 +102,7 @@ class LoginPage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade600,
+                          color: const Color.fromARGB(255, 127, 95, 172),
                         ),
                       ),
                       TextSpan(
@@ -128,17 +128,21 @@ class LoginPage extends StatelessWidget {
 
                 //Email TextField
                 MyTextField(
-                    controller: _emailController,
-                    hintText: 'Email',
-                    obscureText: false),
+                  controller: _emailController,
+                  hintText: 'Email',
+                  obscureText: false,
+                  isUnderlined: true,
+                ),
 
                 const SizedBox(height: 10),
 
                 //Password TextField
                 MyTextField(
-                    controller: _passwordController,
-                    hintText: 'Password',
-                    obscureText: true),
+                  controller: _passwordController,
+                  hintText: 'Password',
+                  obscureText: true,
+                  isUnderlined: true,
+                ),
 
                 const SizedBox(height: 25),
 

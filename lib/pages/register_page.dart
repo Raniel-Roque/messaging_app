@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../components/my_button.dart';
-import '../../components/my_text_field.dart';
-import '../../services/auth/auth_service.dart';
+import '../components/my_button.dart';
+import '../components/my_text_field.dart';
+import '../services/auth/auth_service.dart';
 import 'package:email_validator/email_validator.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -113,7 +113,7 @@ class RegisterPage extends StatelessWidget {
               children: [
                 //Logo
                 Icon(
-                  Icons.message,
+                  Icons.account_circle,
                   size: 80,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -132,25 +132,31 @@ class RegisterPage extends StatelessWidget {
 
                 //Email TextField
                 MyTextField(
-                    controller: _emailController,
-                    hintText: 'Email',
-                    obscureText: false),
+                  controller: _emailController,
+                  hintText: 'Email',
+                  obscureText: false,
+                  isUnderlined: true,
+                ),
 
                 const SizedBox(height: 10),
 
                 //Password TextField
                 MyTextField(
-                    controller: _passwordController,
-                    hintText: 'Password',
-                    obscureText: true),
+                  controller: _passwordController,
+                  hintText: 'Password',
+                  obscureText: true,
+                  isUnderlined: true,
+                ),
 
                 const SizedBox(height: 10),
 
                 //Confirm Password TextField
                 MyTextField(
-                    controller: _confirmPasswordController,
-                    hintText: 'Confirm Password',
-                    obscureText: true),
+                  controller: _confirmPasswordController,
+                  hintText: 'Confirm Password',
+                  obscureText: true,
+                  isUnderlined: true,
+                ),
 
                 const SizedBox(height: 25),
 

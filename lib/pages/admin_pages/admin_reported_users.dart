@@ -54,20 +54,78 @@ class ReportedUsersPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Report Details"),
+        title: Center(
+          child: Text(
+            "Report Details",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Message Owner: $messageOwnerEmail"),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "Message Owner: ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: messageOwnerEmail,
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 10),
-            Text(
-                "Reported Message: $messageContent"), // Show the actual message
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "Reported Message: ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: messageContent,
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 10),
-            Text(
-                "Reported on: ${DateFormat('MMMM d, yyyy - h:mm a').format(timestamp.toDate())}"),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "Reported on: ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: DateFormat('MMMM d, yyyy - h:mm a')
+                        .format(timestamp.toDate()),
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 10),
-            Text("Reported by: $reportedByEmail"),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "Reported by: ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: reportedByEmail,
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
         actions: [
